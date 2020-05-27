@@ -325,7 +325,7 @@ class Robinhood:
         except requests.exceptions.HTTPError:
             raise RH_exception.InvalidInstrumentId()
 
-        return data['results'][0]
+        return data
 
     def instrument(self, id):
         """Fetch instrument info by symbol
