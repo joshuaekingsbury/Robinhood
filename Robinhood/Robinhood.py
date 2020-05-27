@@ -307,11 +307,31 @@ class Robinhood:
         return res['results']
 
 
-    def instrument(self, id):
-        """Fetch instrument info
+    def instrumentByID(self, id):
+        """Fetch instrument info by id
 
             Args:
                 id (str): instrument id
+
+            Returns:
+                (:obj:`dict`): JSON dict of instrument
+        """
+        url = str(endpoints.instruments()) + str(id)
+
+        try:
+            req = requests.get(url, timeout=15)
+            req.raise_for_status()
+            data = req.json()
+        except requests.exceptions.HTTPError:
+            raise RH_exception.InvalidInstrumentId()
+
+        return data['results'][0]
+
+    def instrument(self, id):
+        """Fetch instrument info by symbol
+
+            Args:
+                id (str): instrument symbol
 
             Returns:
                 (:obj:`dict`): JSON dict of instrument
@@ -326,7 +346,6 @@ class Robinhood:
             raise RH_exception.InvalidInstrumentId()
 
         return data['results'][0]
-
 
     def quote_data(self, stock=''):
         """Fetch stock quote
