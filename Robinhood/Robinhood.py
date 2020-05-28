@@ -860,8 +860,8 @@ class Robinhood:
         payload = {}
 
         for field, value in [
-                ('account', self.get_account()['url']),
-                ('name', name),
+ #               ('account', self.get_account()['url']),
+                ('name', name)
             ]:
             if(name is not None):
                 payload[field] = value
