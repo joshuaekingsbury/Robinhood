@@ -819,7 +819,7 @@ class Robinhood:
         """
         return self.session.get(endpoints.watchlists(), timeout=15).json()
 
-    def watchlist(self,listID=''): 
+    def watchlist(self,listID='Default'): 
         """Returns list of securities' symbols that the user has in watchlist
             
             Args:
