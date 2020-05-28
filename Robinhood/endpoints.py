@@ -71,10 +71,10 @@ def user():
     return api_url + "/user/"
 
 #def watchlists():
-    return api_url + "/watchlists/"
+#    return api_url + "/watchlists/"
 
 def watchlists(orderId=None):
-    return api_url + "/watchlists/" + ("{id}/".format(id=orderId) if orderId else "")
+    return api_url + "/watchlists/" + ("{id}/".format(id=orderId) if orderId else "Default")
 
 def news(stock):
     return api_url + "/midlands/news/{_stock}/".format(_stock=stock)
