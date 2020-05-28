@@ -873,12 +873,14 @@ class Robinhood:
             res.raise_for_status()
 
             return res
-        
-        except Exception as ex: #sometimes Robinhood asks for another log in when placing an order
-            try:
-                auth_method()
-            except:
-                print(dir(ex))
+        except requests.exceptions.HTTPError as err_msg:
+            warnings.warn('watchlist ' + repr(err_msg))
+            return err_msg
+#         except Exception as ex: #sometimes Robinhood asks for another log in when placing an order
+#             try:
+#                 auth_method()
+#             except:
+#                 print(dir(ex))
 
                 
     ###########################################################################
