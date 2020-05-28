@@ -485,7 +485,37 @@ class Robinhood:
         res = self.session.get(historicals, timeout=15)
         return res.json()
 
+    def fundamental_data(self, stock=''):
+        """Fetch stock fundamentals
 
+            Args:
+                stock (str or dict): stock ticker symbol or stock instrument
+
+            Returns:
+                (:obj:`dict`): JSON contents from `fundamentals` endpoint
+        """
+
+        if isinstance(stock, dict):
+            if "symbol" in stock.keys():
+                url = str(endpoints.fundamentals()) + stock["symbol"] + "/"
+        elif isinstance(stock, str):
+            url = str(endpoints.fundamentals()) + stock + "/"
+        elif isinstance(stock, unicode):
+            url = str(endpoints.fundamentals()) + str(stock) + "/"
+        else:
+            raise RH_exception.InvalidTickerSymbol()
+
+        #Check for validity of symbol
+        try:
+            req = self.session.get(url, headers=self.headers, timeout=15)
+            req.raise_for_status()
+            data = req.json()
+        except requests.exceptions.HTTPError:
+            raise RH_exception.InvalidTickerSymbol()
+
+
+        return data
+    
     def get_news(self, stock):
         """Fetch news endpoint
             Args:
