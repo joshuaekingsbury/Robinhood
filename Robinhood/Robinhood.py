@@ -878,9 +878,8 @@ class Robinhood:
             try:
                 auth_method()
             except:
-                print(ex)
-                #raise
-                return(ex)
+                print(dir(ex))
+
                 
     ###########################################################################
     #                           GET OPTIONS INFO
