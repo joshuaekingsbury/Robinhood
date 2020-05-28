@@ -76,8 +76,11 @@ def watchlists():
 def news(stock):
     return api_url + "/midlands/news/{_stock}/".format(_stock=stock)
 
-def fundamentals(stock):
-    return api_url + "/fundamentals/{_stock}/".format(_stock=stock)
+def fundamentals():
+    return api_url + "/fundamentals/"
+
+#def fundamentals(stock):
+#    return api_url + "/fundamentals/{_stock}/".format(_stock=stock)
 
 def tags(tag=None):
     '''
