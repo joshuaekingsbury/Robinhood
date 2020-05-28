@@ -516,6 +516,14 @@ class Robinhood:
 
         return data
     
+    
+    def get_fundamental(self, stock=''):
+        """Wrapper for fundamental_data """
+
+        data = self.fundamental_data(stock)
+        return data
+    
+    
     def get_news(self, stock):
         """Fetch news endpoint
             Args:
