@@ -841,7 +841,7 @@ class Robinhood:
 #         """
 #         return self.session.get(endpoints.watchlists() + listID, timeout=15).json()
 
-    
+    @login_required
     def create_watchlist(self, name=None):
         """Creates Watchlist on Robinhood
 
