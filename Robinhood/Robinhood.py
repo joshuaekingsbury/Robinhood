@@ -485,43 +485,43 @@ class Robinhood:
         res = self.session.get(historicals, timeout=15)
         return res.json()
 
-    def fundamental_data(self, stock=''):
-        """Fetch stock fundamentals
+#     def fundamentals_data(self, stock=''):
+#         """Fetch stock fundamentals
 
-            Args:
-                stock (str or dict): stock ticker symbol or stock instrument
+#             Args:
+#                 stock (str or dict): stock ticker symbol or stock instrument
 
-            Returns:
-                (:obj:`dict`): JSON contents from `fundamentals` endpoint
-        """
+#             Returns:
+#                 (:obj:`dict`): JSON contents from `fundamentals` endpoint
+#         """
 
-        if isinstance(stock, dict):
-            if "symbol" in stock.keys():
-                url = str(endpoints.fundamentals()) + stock["symbol"] + "/"
-        elif isinstance(stock, str):
-            url = str(endpoints.fundamentals()) + stock + "/"
-        elif isinstance(stock, unicode):
-            url = str(endpoints.fundamentals()) + str(stock) + "/"
-        else:
-            raise RH_exception.InvalidTickerSymbol()
+#         if isinstance(stock, dict):
+#             if "symbol" in stock.keys():
+#                 url = str(endpoints.fundamentals()) + stock["symbol"] + "/"
+#         elif isinstance(stock, str):
+#             url = str(endpoints.fundamentals()) + stock + "/"
+#         elif isinstance(stock, unicode):
+#             url = str(endpoints.fundamentals()) + str(stock) + "/"
+#         else:
+#             raise RH_exception.InvalidTickerSymbol()
 
-        #Check for validity of symbol
-        try:
-            req = self.session.get(url, headers=self.headers, timeout=15)
-            req.raise_for_status()
-            data = req.json()
-        except requests.exceptions.HTTPError:
-            raise RH_exception.InvalidTickerSymbol()
+#         #Check for validity of symbol
+#         try:
+#             req = self.session.get(url, headers=self.headers, timeout=15)
+#             req.raise_for_status()
+#             data = req.json()
+#         except requests.exceptions.HTTPError:
+#             raise RH_exception.InvalidTickerSymbol()
 
 
-        return data
+#         return data
     
     
-    def get_fundamental(self, stock=''):
-        """Wrapper for fundamental_data """
+#     def get_fundamental(self, stock=''):
+#         """Wrapper for fundamental_data """
 
-        data = self.fundamental_data(stock)
-        return data
+#         data = self.fundamental_data(stock)
+#         return data
     
     
     def get_news(self, stock):
@@ -807,14 +807,79 @@ class Robinhood:
 
         return self.session.get(instrument).json()['symbol']
 
-
+    ###########################################################################
+    #                           WATCHLISTS
+    ###########################################################################
+    
     def watchlists(self): 
         """Returns list of securities' symbols that the user has in watchlist
+            
             Returns:
                 (:object: `dict`): Non-zero positions
         """
-        return self.session.get(endpoints.watchlists() + 'Default/', timeout=15).json()
+        return self.session.get(endpoints.watchlists(), timeout=15).json()
 
+    def watchlist(self,listID=''): 
+        """Returns list of securities' symbols that the user has in watchlist
+            
+            Args:
+                watchlist (str): watchlist name
+            
+            Returns:
+                (:object: `dict`): Non-zero positions
+        """
+        return self.session.get(endpoints.watchlists() + listID, timeout=15).json()
+    
+#     def create_watchlist(self,listID=''): 
+#         """Returns list of securities' symbols that the user has in watchlist
+            
+#             Args:
+#                 watchlist (str): watchlist name
+            
+#             Returns:
+#                 (:object: `dict`): Non-zero positions
+#         """
+#         return self.session.get(endpoints.watchlists() + listID, timeout=15).json()
+
+    
+    def create_watchlist(self, name=None):
+        """Creates Watchlist on Robinhood
+
+            Args:
+                name (str): the name for the new watchlist
+ 
+            Returns:
+                (:obj:`requests.request`): result from `watchlists` put command
+        """
+        # Start with some parameter checks. I'm paranoid about $.
+        if(name is None):
+            raise(ValueError('Watchlist name not in call to create_watchlist'))
+        # Check if watchlist exists
+        
+        #
+        payload = {}
+
+        for field, value in [
+                ('account', self.get_account()['url']),
+                ('name', name),
+            ]:
+            if(name is not None):
+                payload[field] = value
+                
+        print(payload)
+
+        try:
+            res = self.session.post(endpoints.watchlists(), data=payload, timeout=15)
+            res.raise_for_status()
+
+            return res
+        
+        except Exception as ex: #sometimes Robinhood asks for another log in when placing an order
+            try:
+                auth_method()
+            except:
+                print(ex)
+                
     ###########################################################################
     #                           GET OPTIONS INFO
     ###########################################################################
@@ -854,26 +919,30 @@ class Robinhood:
     ###########################################################################
     #                           GET FUNDAMENTALS
     ###########################################################################
-
+    
     def get_fundamentals(self, stock=''):
-        """Find stock fundamentals data
+        """Fetch stock fundamentals
 
             Args:
-                (str): stock ticker
+                stock (str or dict): stock ticker symbol or stock instrument
 
             Returns:
-                (:obj:`dict`): contents of `fundamentals` endpoint
+                (:obj:`dict`): JSON contents from `fundamentals` endpoint
         """
 
-        #Prompt for stock if not entered
-        if not stock:   # pragma: no cover
-            stock = input("Symbol: ")
-
-        url = str(endpoints.fundamentals(str(stock.upper())))
+        if isinstance(stock, dict):
+            if "symbol" in stock.keys():
+                url = str(endpoints.fundamentals()) + stock["symbol"] + "/"
+        elif isinstance(stock, str):
+            url = str(endpoints.fundamentals()) + stock + "/"
+        elif isinstance(stock, unicode):
+            url = str(endpoints.fundamentals()) + str(stock) + "/"
+        else:
+            raise RH_exception.InvalidTickerSymbol()
 
         #Check for validity of symbol
         try:
-            req = self.session.get(url, timeout=15)
+            req = self.session.get(url, headers=self.headers, timeout=15)
             req.raise_for_status()
             data = req.json()
         except requests.exceptions.HTTPError:
@@ -881,6 +950,34 @@ class Robinhood:
 
 
         return data
+    
+    
+#     def get_fundamentals(self, stock=''):
+#         """Find stock fundamentals data
+
+#             Args:
+#                 (str): stock ticker
+
+#             Returns:
+#                 (:obj:`dict`): contents of `fundamentals` endpoint
+#         """
+
+#         #Prompt for stock if not entered
+#         if not stock:   # pragma: no cover
+#             stock = input("Symbol: ")
+
+#         url = str(endpoints.fundamentals(str(stock.upper())))
+
+#         #Check for validity of symbol
+#         try:
+#             req = self.session.get(url, timeout=15)
+#             req.raise_for_status()
+#             data = req.json()
+#         except requests.exceptions.HTTPError:
+#             raise RH_exception.InvalidTickerSymbol()
+
+
+#         return data
 
 
     def fundamentals(self, stock=''):
